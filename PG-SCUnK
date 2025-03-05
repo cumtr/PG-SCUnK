@@ -1,0 +1,193 @@
+#!/bin/bash
+
+# version 04.03.25
+
+# set -e # exit on error
+start=`date +%s`
+
+###########################################
+####           Initialisation          ####
+###########################################
+
+#### Initialize variables ####
+input_gfa_file=""
+input_assemblies_directory=""
+temp_directory=""
+output_base=""
+kmer_size=100
+# threads=1
+verbose=0
+
+# Function to display help message
+usage() {
+    echo "Usage: $0 -p <panGenome> -a <path/to/assemblies/> -o <outputDir/outputBasename> -t <tempDir> (-k <kmer_size> -v)"
+    exit 1
+}
+
+# Use getopts to parse the flags
+while getopts "p:a:o:t:k:v" flag; do
+  case "${flag}" in
+    p) input_gfa_file=${OPTARG} ;;    # -i flag for input file
+    a) input_assemblies_directory=${OPTARG} ;;
+    o) output_base=${OPTARG} ;;   # -o flag for output file
+    t) temp_directory=${OPTARG} ;;     # -w flag for window size
+    k) kmer_size=${OPTARG} ;;
+    v) verbose=1 ;;           # -v flag for verbose mode (no argument)
+    *) usage ;; 
+  esac
+done
+
+if [[ $verbose -eq 1 ]]; then
+    set -x
+    echo "Verbose mode enabled: 'set -x' is active, all commands will be printend to outputDir/outputBasename.log file)"
+fi
+
+# Check if input_og_file or output_file is not empty
+if [[ -z "$input_gfa_file" || -z "$input_assemblies_directory" || -z "$output_base" ]]; then
+  echo "Error: check that input and output files are provided."
+  usage
+  exit 1
+fi
+
+#### Display the parsed options ####
+echo ""
+echo "Input File: $input_gfa_file"
+echo "Output Directory: $output_base"
+echo "kmer Size: $kmer_size"
+if [[ $verbose -eq 1 ]]; then
+  echo "Verbose mode is ON"
+fi
+
+RandName=$(echo $RANDOM | md5sum | head -c 6)
+echo ""
+echo "Internal random ID :" ${RandName}
+echo ""
+
+#### Create necessary directories ####
+mkdir -p ${temp_directory}/${RandName}
+output_dir="$(dirname "$output_base")"
+mkdir -p "$output_dir" "$temp_directory"
+
+#### Remove output file if already exist ####
+
+[ -e $output_base.log ] && rm $output_base.log
+[ -e $output_base.all.txt ] && rm $output_base.all.txt
+[ -e $output_base.uniq.txt ] && rm $output_base.uniq.txt
+[ -e $output_base.dup.txt ] && rm $output_base.dup.txt
+[ -e $output_base.colapsed.txt ] && rm $output_base.colapsed.txt
+[ -e $output_base.stats.txt ] && rm $output_base.stats.txt
+
+
+#############################################################
+#####          Step 1: count kmers each assembly         ####
+#####    Step 2 : Identify unique and Universal kmers    ####
+#############################################################
+
+start=$(date +%s)
+echo "[$((`date +%s`-start)) sec] Starting k-mer extraction and intersection ..."
+
+# Initialize variables
+first_file=true
+intersect_file=""
+
+# Process each assembly file iteratively
+for FILE in ${input_assemblies_directory}/*.fasta; do
+  NAME=$(basename "${FILE%.*}")
+  echo "[INFO] Processing file: $NAME"
+
+  # Extract kmers for the current file
+  temp_kmer_db="${temp_directory}/${RandName}/$NAME"
+  kmc -t1 -cm -k"$kmer_size" -ci0 -cx1 -fm "$FILE" "$temp_kmer_db" "${temp_directory}/${RandName}/" > $output_base.log out 2>&1
+
+  if $first_file; then
+    # First file: copy kmer database to initialize the intersection file
+    mv "$temp_kmer_db.kmc_suf" "${temp_directory}/${RandName}/intersect_initial.kmc_suf"
+    mv "$temp_kmer_db.kmc_pre" "${temp_directory}/${RandName}/intersect_initial.kmc_pre"
+    intersect_file="${temp_directory}/${RandName}/intersect_initial"
+    first_file=false
+  else
+    # Perform intersection with the current kmer set
+    next_intersect_file="${temp_directory}/${RandName}/intersect_temp_$NAME"
+    kmc_tools -t1 -v simple "$intersect_file" "$temp_kmer_db" intersect "$next_intersect_file"  # >> $output_base.log out 2>&1
+
+    # Clean up previous intersection files after generating the new one
+    rm "$temp_kmer_db.kmc_suf" "$temp_kmer_db.kmc_pre"
+
+    # Update intersect_file to the new intersection
+    previous_intersect_file="$intersect_file"
+    intersect_file="$next_intersect_file"
+  fi
+
+  # Clean up kmc files for the current assembly
+  [ -e "$previous_intersect_file.kmc_suf" ] && rm "$previous_intersect_file.kmc_suf" "$previous_intersect_file.kmc_pre"
+done
+
+# Finalize the results
+final_kmer_file="${temp_directory}/${RandName}/${RandName}_allUniqKmers"
+mv "$intersect_file.kmc_suf" "$final_kmer_file.kmc_suf"
+mv "$intersect_file.kmc_pre" "$final_kmer_file.kmc_pre"
+
+kmc_tools -t1 transform "$final_kmer_file" dump "$output_base.all.txt" # >> $output_base.log out 2>&1
+
+# Clean up final temporary intersection file
+# rm "$final_kmer_file.kmc_suf" "$final_kmer_file.kmc_pre"
+
+echo "[$((`date +%s`-start)) sec] k-mer extraction and intersection: DONE"
+
+
+
+#######################################################
+#####   Step 3 : Extracting kmers from the graph  #####
+#######################################################
+
+echo  "[$((`date +%s`-start)) sec] Extracting K-mers from the Graph ... "
+
+# Extract sequences from GFA file and convert it to fasta
+awk '$1=="S" {print ">"$2"\n"$3}' ${input_gfa_file} > ${temp_directory}/${RandName}/${RandName}.graphnodes.fa
+
+# Kmer count from the graph nodes
+kmc -t1 -cm -k"$kmer_size" -fm -ci0 "${temp_directory}/${RandName}/${RandName}.graphnodes.fa" "${temp_directory}/${RandName}/${RandName}.graphnodes" "${temp_directory}/${RandName}/"  >> $output_base.log out 2>&1
+
+echo  "[$((`date +%s`-start)) sec] Extracting K-mers from the Graph : DONE"
+
+
+###################################################
+#####    Step 4 : Compare the sets of kmers    ####
+###################################################
+
+echo  "[$((`date +%s`-start)) sec] Comparing Single Copy and Unversal Kmers with kmers from the graph ..."
+
+# Run KMC tools for intersect & identify unique kmers presents 1 time in the graph
+kmc_tools -t1 simple "${temp_directory}/${RandName}/${RandName}_allUniqKmers" "${temp_directory}/${RandName}/${RandName}.graphnodes" -cx1 intersect "${temp_directory}/${RandName}/${RandName}.unique"
+kmc_tools -t1 transform "${temp_directory}/${RandName}/${RandName}.unique" dump "$output_base.unique.txt"
+
+# Run KMC tools for intersect & identify unique kmers presents 2 or more times in the graph
+kmc_tools -t1 simple "${temp_directory}/${RandName}/${RandName}_allUniqKmers" "${temp_directory}/${RandName}/${RandName}.graphnodes" -ci2 intersect "${temp_directory}/${RandName}/${RandName}.duplicated"
+kmc_tools -t1 transform "${temp_directory}/${RandName}/${RandName}.duplicated" dump "$output_base.duplicated.txt"
+
+# Run KMC tools for intersect & identify unique kmers presents 2 or more times in the graph
+kmc_tools -t1 simple "${temp_directory}/${RandName}/${RandName}_allUniqKmers" "${temp_directory}/${RandName}/${RandName}.graphnodes" kmers_subtract "${temp_directory}/${RandName}/${RandName}.colapsed"
+kmc_tools -t1 transform "${temp_directory}/${RandName}/${RandName}.colapsed" dump "$output_base.colapsed.txt"
+
+echo  "[$((`date +%s`-start)) sec] Comparing Sets of Kmers : DONE"
+
+
+#######################################################
+#####    Step 5 : Extract & summarise the stats    ####
+#######################################################
+
+kmer_total=`wc -l $output_base.all.txt | cut -f1 -d" "`
+kmer_uniq=`wc -l $output_base.unique.txt | cut -f1 -d" "`
+kmer_dup=`wc -l $output_base.duplicated.txt | cut -f1 -d" "`
+kmer_colapsed=`wc -l $output_base.colapsed.txt | cut -f1 -d" "`
+
+echo "#count_all_kmers count_unique_mers count_duplicated_kmers count_colapsed_kmers" > $output_base.stats.txt
+echo $kmer_total $kmer_uniq $kmer_dup $kmer_colapsed >> $output_base.stats.txt
+
+
+###########################################
+
+# Cleanup: remove unnecessary temporary files
+rm -rf "${temp_directory}/${RandName}"
+
+
