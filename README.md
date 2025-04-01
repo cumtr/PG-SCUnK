@@ -100,8 +100,29 @@ the four other files report the k-mers for the different categories:
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.duplicated.txt`: List of _**duplicated**_ K-mers.
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.collapsed.txt`: List of _**collapsed**_ K-mers.
 
+---
 
-### Compagnion scripts
+## Chosing the best k-mer size
+
+The **`-k`** parameter, which sets the k-mer size, is the only parameter that the user can specify in the PG-SCUnK workflow.
+Choosing the best possible k requires understanding a few key aspects of how PG-SCUnK works.
+
+**Even or Odd?**
+
+Unlike many programs, PG-SCUnK does not require k-mers to be odd. This is because it uses canonical k-mers: any k-mer and its reverse complement are treated as the same unique k-mer, regardless of their length.
+
+**Not Too Big, Not Too Small**
+
+In our tests (see the associated publication for details), PG-SCUnK results are robust to k-mer size as long as the size is not too large.
+When k-mers are too long, they are more likely to be broken by polymorphisms. As a result, their number decreases, reducing the genome’s representation.
+When k-mers are too short, the opposite problem occurs: they tend to lack specificity, making them less unique and less universal.
+
+Our tests suggest that choosing a k value between 31 and 150 provides consistent results.
+The default value, 100, performed well in our benchmarking.
+
+---
+
+## Compagnion scripts
 
 PG-SCUnK comes with companion scripts.
 
@@ -124,13 +145,14 @@ You can install _R_ in the environment using :
 
 ## Example of workflow
 
-Below is an example of workflow to run PG-SCUnK for a pan-genome build for 50 e.coli and published [here](https://www.nature.com/articles/s41592-024-02430-3)
+Here is an example of workflow to run PG-SCUnK for a pan-genome build for 50 e.coli and published [here](https://www.nature.com/articles/s41592-024-02430-3)
 
 ```
 # Download and uncompress the graph in .gfa format.
 wget https://zenodo.org/records/7937947/files/ecoli50.gfa.zst
 unzstd ecoli50.gfa.zst 
 
+# create a temporary working directory
 mkdir TEMP
 
 # run the first script to extract all the assemblies from the graph.
@@ -140,7 +162,7 @@ mkdir TEMP
 /path/to/PG-SCUnK/PG-SCUnK -p ecoli50.gfa -a ecoli50 -o Out_PG-SCUnK/ecoli50 -t TEMP -k 100
 
 # Create a Ternary plot of the results
-Rscript --vanilla ~/WORK/TOOLS/PG-SCUnK/scripts/PG-SCUnK_plot.R Out_PG-SCUnK/ecoli50.stats.txt Out_PG-SCUnK/ecoli50.out.pdf
+Rscript --vanilla /path/to/PG-SCUnK/scripts/PG-SCUnK_plot.R Out_PG-SCUnK/ecoli50.stats.txt Out_PG-SCUnK/ecoli50.out.pdf
 ```
 
 ---
