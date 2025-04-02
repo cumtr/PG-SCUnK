@@ -67,7 +67,7 @@ chmod +x ./PG-SCUnK
 
 This command should print the help line for PG-SCUnK:
 
-`Usage: ./PG-SCUnK -p <panGenome> -a <path/to/assemblies/> -o <outputDir/outputBasename> -t <tempDir> (-k <kmer_size> -v)`
+`Usage: ./PG-SCUnK -p <panGenome> -a <path/to/assemblies/> -o <outputDir/outputBasename> -t <WorkDir> (-k <kmer_size> -v)`
 
 ---
 
@@ -77,7 +77,7 @@ To run, PG-SCUnK require four informations:
 - **`-p`** Point to the graph in `.gfa` format
 - **`-a`** Point to the directory where all the assemblies that compose the graph are stored (PG-SCUnK assumes all the files is this directory than ends with `.fasta` are the assemblies to consider)
 - **`-o`** Gives to PG-SCUnK the path + basename of the output file
-- **`-t`** set the temp directory for PG-SCUnK to write temporary files
+- **`-t`** set the working directory for PG-SCUnK to write temporary files
 
 two other optional parameters can be provided: 
 - **`-k`** is used to give to PG-SCUnK the k-mer size to use. default value is 100.
