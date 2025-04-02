@@ -1,0 +1,9 @@
+name: PG-SCUnK-env
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - kmc=3.2.4
+  - samtools=1.21
+  - r-base=4.2
