@@ -23,11 +23,11 @@ if (length(args)==0) {
   args[2] = "out.pdf"
 }
 
-# Check if package missing, if yes install, otherwise load ot
+# Check if package missing, if yes install, then load it
 if(!require(Ternary)){
   install.packages("Ternary",repos = "http://cran.us.r-project.org")
-  library(Ternary)
 }
+library(Ternary)
 
 #### read the data #####
 
