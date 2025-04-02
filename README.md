@@ -28,22 +28,22 @@ All the dependence can be installed by running:
 
 ```
 # Using mamba 
-mamba install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0 
+mamba install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 conda-forge::r-base 
 
 # Using conda
-# conda install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0
+# conda install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 conda-forge::r-base
 ```
 
 Creating a dedicated environment is a convenient way to ensure no interference with other software.
 
 ```
 # Using mamba 
-mamba create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0
+mamba create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 conda-forge::r-base
 # then load the evironement before running PG-SCUnK with:
 mamba activate PG-SCUnK-env
 
 # Using conda
-# conda create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0 
+# conda create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 conda-forge::r-base
 # conda activate PG-SCUnK-env
 ```
 
