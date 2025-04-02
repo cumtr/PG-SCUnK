@@ -28,22 +28,22 @@ All the dependence can be installed by running:
 
 ```
 # Using mamba 
-mamba install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 conda-forge::r-base=4.2.0 
+mamba install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0 
 
 # Using conda
-# conda install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 conda-forge::r-base=4.2.0
+# conda install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0
 ```
 
 Creating a dedicated environment is a convenient way to ensure no interference with other software.
 
 ```
 # Using mamba 
-mamba create -f environment.yaml
+mamba create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0
 # then load the evironement before running PG-SCUnK with:
 mamba activate PG-SCUnK-env
 
 # Using conda
-# conda create -f environment.yaml
+# conda create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0 
 # conda activate PG-SCUnK-env
 ```
 
@@ -134,14 +134,12 @@ This script is useful to extract the assemblies from a graph. **Before using it,
 
 this script requires _samtools_ and _odgi_ to be present in you path. you can install them in the environment using: 
 `mamba install -n PG-SCUnK-env bioconda::samtools=1.21 bioconda::odgi=0.9.0`
-or using the existing *PG-SCUnK-env* environment.
 
 **`scripts/PG-SCUnK_plot.R`**
 
 this script uses _R_ to make a triangular plot for a given a `.stats.txt` output file from PG-SCUnK.
 You can install _R_ in the environment using : 
 `mamba install -n PG-SCUnK-env bioconda::samtools=1.21 bioconda::R=0.9.0`
-or using the existing *PG-SCUnK-env* environment.
 
 ---
 
