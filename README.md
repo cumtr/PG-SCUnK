@@ -157,7 +157,7 @@ unzstd ecoli50.gfa.zst
 mkdir TEMP
 
 # run the first script to extract all the assemblies from the graph.
-/path/to/PG-SCUnK/scripts/GFA2HaploFasta.bash -p ecoli50.gfa -t TEMP -o ecoli50 -@ 1
+bash /path/to/PG-SCUnK/scripts/GFA2HaploFasta.bash -p ecoli50.gfa -t TEMP -o ecoli50 -@ 1
 
 # Run PG-SCUnK
 /path/to/PG-SCUnK/PG-SCUnK -p ecoli50.gfa -a ecoli50 -o Out_PG-SCUnK/ecoli50 -t TEMP -k 100
