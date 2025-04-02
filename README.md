@@ -22,28 +22,28 @@ bellow is a schematic representation of the PG-SCUnK workflow, please read the a
 ### Install the dependances in a dedicated environment.
 
 PG-SCUnK requires _KMC_ to be installed and available in your `$PATH`.
-Companions scripts require _samtools_ and _odgi_ for **_GFA2HaploFasta.bash_** and _zlib_ and _R_ for **_PG-SCUnK_plot.R_**
+Companions scripts require _samtools_ for **_GFA2HaploFasta.bash_** and _zlib_ and _R_ for **_PG-SCUnK_plot.R_**
 
 All the dependence can be installed by running:
 
 ```
 # Using mamba 
-mamba install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0 
+mamba install bioconda::kmc=3.2.4 bioconda::samtools=1.21 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0 
 
 # Using conda
-# conda install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0
+# conda install bioconda::kmc=3.2.4 bioconda::samtools=1.21 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0
 ```
 
 Creating a dedicated environment is a convenient way to ensure no interference with other software.
 
 ```
 # Using mamba 
-mamba create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0
+mamba create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0
 # then load the evironement before running PG-SCUnK with:
 mamba activate PG-SCUnK-env
 
 # Using conda
-# conda create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0 
+# conda create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 conda-forge::zlib=1.3.1 bioconda::r-base=4.2.0 
 # conda activate PG-SCUnK-env
 ```
 
@@ -132,8 +132,8 @@ This script is useful to extract the assemblies from a graph. **Before using it,
 
 `Usage: ./scripts/GFA2HaploFasta.bash -p <panGenome.gfa> -t <tempDir> -o <outDir> -@ <threads>`
 
-this script requires _samtools_ and _odgi_ to be present in you path. you can install them in the environment using: 
-`mamba install -n PG-SCUnK-env bioconda::samtools=1.21 bioconda::odgi=0.9.0`
+this script requires _samtools_ to be present in you path. you can install them in the environment using: 
+`mamba install -n PG-SCUnK-env bioconda::samtools=1.21`
 
 **`scripts/PG-SCUnK_plot.R`**
 
