@@ -111,7 +111,7 @@ Choosing the best possible k requires understanding a few key aspects of how PG-
 
 Unlike many programs, PG-SCUnK does not require k-mers to be odd. This is because it uses canonical k-mers: any k-mer and its reverse complement are treated as the same unique k-mer, regardless of their length.
 
-**Not Too Big, Not Too Small**
+**Not too big, Not too small**
 
 In our tests (see the associated publication for details), PG-SCUnK results are robust to k-mer size as long as the size is not too large.
 When k-mers are too long, they are more likely to be broken by polymorphisms. As a result, their number decreases, reducing the genome’s representation.
