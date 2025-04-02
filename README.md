@@ -99,6 +99,7 @@ the four other files report the k-mers for the different categories:
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.unique.txt`: List of _**unique**_ K-mers.
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.duplicated.txt`: List of _**duplicated**_ K-mers.
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.collapsed.txt`: List of _**collapsed**_ K-mers.
+- `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.log`: log file.
 
 ---
 
