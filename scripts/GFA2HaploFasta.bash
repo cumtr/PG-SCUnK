@@ -49,7 +49,7 @@ extract_gfa_fasta() {
               if(o=="+") {printf N[n]} else {printf revcomp(N[n])} };  printf "\n" }}' ${PG}
 }
 
-extract_gfa_fasta > ${TEMPDIR}/${RandName}.full.fa#odgi paths -t ${THREADS} -f -i ${PG} > ${TEMPDIR}/${RandName}.full.fa
+extract_gfa_fasta > ${TEMPDIR}/${RandName}.full.fa
 
 # Index the panGenome fasta using samtools
 # Assuming samtools is available, loading necessary modules
