@@ -1,0 +1,24 @@
+name: PG-SCUnK
+on:
+  workflow_dispatch
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: PG-SCUnK-env
+          create-args: >-
+            bioconda::kmc=3.2.4
+            bioconda::samtools=1.21
+            bioconda::odgi=0.9.0
+            conda-forge::zlib=1.3.1
+            conda-forge::r-basepython=3.10
+      - name: Run
+        run: |
+             wget https://zenodo.org/records/7937947/files/ecoli50.gfa.zst
+             unzstd ecoli50.gfa.zst 
+             mkdir TEMP
+             bash scripts/GFA2HaploFasta.bash -p ecoli50.gfa -t TEMP -o ecoli50 -@ 1
+             bash PG-SCUnK -p ecoli50.gfa -a ecoli50 -o Out_PG-SCUnK/ecoli50 -t TEMP -k 100

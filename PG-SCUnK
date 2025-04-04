@@ -20,17 +20,17 @@ verbose=0
 
 # Function to display help message
 usage() {
-    echo "Usage: $0 -p <panGenome> -a <path/to/assemblies/> -o <outputDir/outputBasename> -t <tempDir> (-k <kmer_size> -v)"
+    echo "Usage: $0 -p <panGenome> -a <path/to/assemblies/> -o <outputDir/outputBasename> -t <WorkDir> (-k <kmer_size> -v)"
     exit 1
 }
 
 # Use getopts to parse the flags
 while getopts "p:a:o:t:k:v" flag; do
   case "${flag}" in
-    p) input_gfa_file=${OPTARG} ;;    # -i flag for input file
+    p) input_gfa_file=${OPTARG} ;;    
     a) input_assemblies_directory=${OPTARG} ;;
-    o) output_base=${OPTARG} ;;   # -o flag for output file
-    t) temp_directory=${OPTARG} ;;     # -w flag for window size
+    o) output_base=${OPTARG} ;;   
+    t) temp_directory=${OPTARG} ;;     
     k) kmer_size=${OPTARG} ;;
     v) verbose=1 ;;           # -v flag for verbose mode (no argument)
     *) usage ;; 
@@ -58,7 +58,7 @@ if [[ $verbose -eq 1 ]]; then
   echo "Verbose mode is ON"
 fi
 
-RandName=$(echo $RANDOM | md5sum | head -c 6)
+RandName=$(xxd -u -l 3 -p /dev/urandom)
 echo ""
 echo "Internal random ID :" ${RandName}
 echo ""
