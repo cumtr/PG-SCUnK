@@ -62,6 +62,6 @@ done
 # Cleanup
 rm ${TEMPDIR}/${RandName}.full.fa
 rm ${TEMPDIR}/${RandName}.full.fa.fai
-rm ${TEMPDIR}/${RandName}/ListHaplotypes.txt
+rm ${TEMPDIR}/${RandName}.ListHaplotypes.txt
 
 echo "Processing completed. Haplotypes extracted to ${OUTDIR}"
