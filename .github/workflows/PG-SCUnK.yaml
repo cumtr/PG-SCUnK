@@ -24,4 +24,9 @@ jobs:
              mkdir TEMP
              bash scripts/GFA2HaploFasta.bash -p ecoli50.gfa -t TEMP -o ecoli50 -@ 1
              bash PG-SCUnK -p ecoli50.gfa -a ecoli50 -o Out_PG-SCUnK/ecoli50 -t TEMP -k 100
+             if md5sum --status -c <(echo -e "fae38b458a2f79bc6935092f61560785  Out_PG-SCUnK/ecoli50.all.txt\nc9c77a91722d14b7cf91241f15b8f1e8  Out_PG-SCUnK/ecoli50.colapsed.txt\n0328efc2c82f53415cc023060caeaaf3  Out_PG-SCUnK/ecoli50.duplicated.txt\n808a1bbddd88a48e1ee2952991a48d18  Out_PG-SCUnK/ecoli50.stats.txt\n1f35e73a4a9e07b0523b0ded01b83aee  Out_PG-SCUnK/ecoli50.unique.txt"); then
+               echo "Test passed!"
+             else
+               exit 1
+             fi
         shell: bash -el {0}
