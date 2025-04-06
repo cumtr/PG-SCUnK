@@ -1,6 +1,6 @@
 ![](images/PG-SCUnK_logo.png)
 
-**P**an**G**enome **S**ingle **C**opy and **Un**iversal **K**mer counter (**PG-SCUnK**) aims to measure pan-genome graph quality using single-copy and universal *k*-mers.  
+**P**an**G**enome **S**ingle **C**opy and **Un**iversal **K**-mer counter (**PG-SCUnK**) aims to measure pan-genome graph quality using single-copy and universal *k*-mers.  
 We assume that single-copy *k*-mers found in an assembly and universally present across all assemblies are orthologous, and should be found uniquely and in their full length in the nodes of the graph.
 
 We thus propose simple metrics to describe a pan-genome graph based on the proportion of single-copy and universal *k*-mers composing the assemblies that are:
