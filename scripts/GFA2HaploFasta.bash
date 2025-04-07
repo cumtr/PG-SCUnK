@@ -63,6 +63,5 @@ done
 rm ${TEMPDIR}/${RandName}.full.fa
 rm ${TEMPDIR}/${RandName}.full.fa.fai
 rm ${TEMPDIR}/${RandName}.ListHaplotypes.txt
-rmdir ${TEMPDIR}
 
 echo "Processing completed. Haplotypes extracted to ${OUTDIR}"
