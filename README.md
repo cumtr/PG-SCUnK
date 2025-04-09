@@ -10,7 +10,7 @@ We thus propose simple metrics to describe a pan-genome graph based on the propo
 
 The pipeline relies on [KMC](https://github.com/refresh-bio/KMC) to identify single-copy *k*-mers shared by all the assemblies (i.e., universal) composing a pan-genome graph.
 
-bellow is a schematic representation of the `PG-SCUnK` workflow, please read the associated publication for details.
+bellow is a schematic representation of the `PG-SCUnK` workflow, please read the [associated publication](https://www.biorxiv.org/content/10.1101/2025.04.03.646777v1) for details.
 
 ![](images/PG-SCUnK_workflow.png)
 
@@ -165,6 +165,12 @@ bash /path/to/PG-SCUnK/scripts/GFA2HaploFasta.bash -p ecoli50.gfa -t TEMP -o eco
 # Create a Ternary plot of the results
 Rscript --vanilla /path/to/PG-SCUnK/scripts/PG-SCUnK_plot.R Out_PG-SCUnK/ecoli50.stats.txt Out_PG-SCUnK/ecoli50.out.pdf
 ```
+
+---
+
+## Citation
+
+If you use `PG-SCUnK`, please cite our [paper](https://www.biorxiv.org/content/10.1101/2025.04.03.646777v1).
 
 ---
 
