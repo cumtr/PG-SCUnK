@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# version 04.03.25
+# version 10.04.25
 
 # set -e # exit on error
 start=`date +%s`
@@ -68,8 +68,7 @@ mkdir -p ${temp_directory}/${RandName}
 output_dir="$(dirname "$output_base")"
 mkdir -p "$output_dir" "$temp_directory"
 
-#### Remove output file if already exist ####
-
+#### Remove output file if already existing ####
 [ -e $output_base.log ] && rm $output_base.log
 [ -e $output_base.all.txt ] && rm $output_base.all.txt
 [ -e $output_base.uniq.txt ] && rm $output_base.uniq.txt
@@ -77,6 +76,8 @@ mkdir -p "$output_dir" "$temp_directory"
 [ -e $output_base.colapsed.txt ] && rm $output_base.colapsed.txt
 [ -e $output_base.stats.txt ] && rm $output_base.stats.txt
 
+#### Define usefull variables ####
+verboseKMC=`if [ "$verbose" == 0 ]; then echo "-hp"; fi`
 
 #############################################################
 #####          Step 1: count kmers each assembly         ####
@@ -97,7 +98,7 @@ for FILE in ${input_assemblies_directory}/*.fasta; do
 
   # Extract kmers for the current file
   temp_kmer_db="${temp_directory}/${RandName}/$NAME"
-  kmc -t1 -cm -k"$kmer_size" -ci0 -cx1 -fm "$FILE" "$temp_kmer_db" "${temp_directory}/${RandName}/" > $output_base.log out 2>&1
+  kmc -t1 -cm -k"$kmer_size" -ci0 -cx1 -fm "$verboseKMC" "$FILE" "$temp_kmer_db" "${temp_directory}/${RandName}/" > $output_base.log out 2>&1
 
   if $first_file; then
     # First file: copy kmer database to initialize the intersection file
@@ -146,7 +147,7 @@ echo  "[$((`date +%s`-start)) sec] Extracting K-mers from the Graph ... "
 awk '$1=="S" {print ">"$2"\n"$3}' ${input_gfa_file} > ${temp_directory}/${RandName}/${RandName}.graphnodes.fa
 
 # Kmer count from the graph nodes
-kmc -t1 -cm -k"$kmer_size" -fm -ci0 "${temp_directory}/${RandName}/${RandName}.graphnodes.fa" "${temp_directory}/${RandName}/${RandName}.graphnodes" "${temp_directory}/${RandName}/"  >> $output_base.log out 2>&1
+kmc -t1 -cm -k"$kmer_size" -fm -ci0 "$verboseKMC" "${temp_directory}/${RandName}/${RandName}.graphnodes.fa" "${temp_directory}/${RandName}/${RandName}.graphnodes" "${temp_directory}/${RandName}/"  >> $output_base.log out 2>&1
 
 echo  "[$((`date +%s`-start)) sec] Extracting K-mers from the Graph : DONE"
 
