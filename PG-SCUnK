@@ -98,7 +98,7 @@ for FILE in ${input_assemblies_directory}/*.fasta; do
 
   # Extract kmers for the current file
   temp_kmer_db="${temp_directory}/${RandName}/$NAME"
-  kmc -t1 -cm -k"$kmer_size" -ci0 -cx1 -fm "$verboseKMC" "$FILE" "$temp_kmer_db" "${temp_directory}/${RandName}/" > $output_base.log out 2>&1
+  kmc -t1 -cm -k"$kmer_size" -ci0 -cx1 -fm "$FILE" "$temp_kmer_db" "${temp_directory}/${RandName}/" > $output_base.log out 2>&1
 
   if $first_file; then
     # First file: copy kmer database to initialize the intersection file
@@ -147,7 +147,7 @@ echo  "[$((`date +%s`-start)) sec] Extracting K-mers from the Graph ... "
 awk '$1=="S" {print ">"$2"\n"$3}' ${input_gfa_file} > ${temp_directory}/${RandName}/${RandName}.graphnodes.fa
 
 # Kmer count from the graph nodes
-kmc -t1 -cm -k"$kmer_size" -fm -ci0 "$verboseKMC" "${temp_directory}/${RandName}/${RandName}.graphnodes.fa" "${temp_directory}/${RandName}/${RandName}.graphnodes" "${temp_directory}/${RandName}/"  >> $output_base.log out 2>&1
+kmc -t1 -cm -k"$kmer_size" -fm -ci0 "${temp_directory}/${RandName}/${RandName}.graphnodes.fa" "${temp_directory}/${RandName}/${RandName}.graphnodes" "${temp_directory}/${RandName}/"  >> $output_base.log out 2>&1
 
 echo  "[$((`date +%s`-start)) sec] Extracting K-mers from the Graph : DONE"
 
