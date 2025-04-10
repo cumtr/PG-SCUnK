@@ -97,7 +97,7 @@ for FILE in ${input_assemblies_directory}/*.fasta; do
 
   # Extract kmers for the current file
   temp_kmer_db="${temp_directory}/${RandName}/$NAME"
-  kmc -t1 -cm -k"$kmer_size" -ci0 -cx1 -fm "$FILE" "$temp_kmer_db" "${temp_directory}/${RandName}/" > $output_base.log out 2>&1
+  kmc -hp -t1 -cm -k"$kmer_size" -ci0 -cx1 -fm "$FILE" "$temp_kmer_db" "${temp_directory}/${RandName}/" > $output_base.log out 2>&1
 
   if $first_file; then
     # First file: copy kmer database to initialize the intersection file
@@ -108,7 +108,7 @@ for FILE in ${input_assemblies_directory}/*.fasta; do
   else
     # Perform intersection with the current kmer set
     next_intersect_file="${temp_directory}/${RandName}/intersect_temp_$NAME"
-    kmc_tools -t1 -v simple "$intersect_file" "$temp_kmer_db" intersect "$next_intersect_file"  # >> $output_base.log out 2>&1
+    kmc_tools -hp -t1 -v simple "$intersect_file" "$temp_kmer_db" intersect "$next_intersect_file"  # >> $output_base.log out 2>&1
 
     # Clean up previous intersection files after generating the new one
     rm "$temp_kmer_db.kmc_suf" "$temp_kmer_db.kmc_pre"
@@ -127,7 +127,7 @@ final_kmer_file="${temp_directory}/${RandName}/${RandName}_allUniqKmers"
 mv "$intersect_file.kmc_suf" "$final_kmer_file.kmc_suf"
 mv "$intersect_file.kmc_pre" "$final_kmer_file.kmc_pre"
 
-kmc_tools -t1 transform "$final_kmer_file" dump "$output_base.all.txt" # >> $output_base.log out 2>&1
+kmc_tools -hp -t1 transform "$final_kmer_file" dump "$output_base.all.txt" # >> $output_base.log out 2>&1
 
 # Clean up final temporary intersection file
 # rm "$final_kmer_file.kmc_suf" "$final_kmer_file.kmc_pre"
@@ -146,7 +146,7 @@ echo  "[$((`date +%s`-start)) sec] Extracting K-mers from the Graph ... "
 awk '$1=="S" {print ">"$2"\n"$3}' ${input_gfa_file} > ${temp_directory}/${RandName}/${RandName}.graphnodes.fa
 
 # Kmer count from the graph nodes
-kmc -t1 -cm -k"$kmer_size" -fm -ci0 "${temp_directory}/${RandName}/${RandName}.graphnodes.fa" "${temp_directory}/${RandName}/${RandName}.graphnodes" "${temp_directory}/${RandName}/"  >> $output_base.log out 2>&1
+kmc -hp -t1 -cm -k"$kmer_size" -fm -ci0 "${temp_directory}/${RandName}/${RandName}.graphnodes.fa" "${temp_directory}/${RandName}/${RandName}.graphnodes" "${temp_directory}/${RandName}/"  >> $output_base.log out 2>&1
 
 echo  "[$((`date +%s`-start)) sec] Extracting K-mers from the Graph : DONE"
 
@@ -158,16 +158,16 @@ echo  "[$((`date +%s`-start)) sec] Extracting K-mers from the Graph : DONE"
 echo  "[$((`date +%s`-start)) sec] Comparing Single Copy and Unversal Kmers with kmers from the graph ..."
 
 # Run KMC tools for intersect & identify unique kmers presents 1 time in the graph
-kmc_tools -t1 simple "${temp_directory}/${RandName}/${RandName}_allUniqKmers" "${temp_directory}/${RandName}/${RandName}.graphnodes" -cx1 intersect "${temp_directory}/${RandName}/${RandName}.unique"
-kmc_tools -t1 transform "${temp_directory}/${RandName}/${RandName}.unique" dump "$output_base.unique.txt"
+kmc_tools -hp -t1 simple "${temp_directory}/${RandName}/${RandName}_allUniqKmers" "${temp_directory}/${RandName}/${RandName}.graphnodes" -cx1 intersect "${temp_directory}/${RandName}/${RandName}.unique"
+kmc_tools -hp -t1 transform "${temp_directory}/${RandName}/${RandName}.unique" dump "$output_base.unique.txt"
 
 # Run KMC tools for intersect & identify unique kmers presents 2 or more times in the graph
-kmc_tools -t1 simple "${temp_directory}/${RandName}/${RandName}_allUniqKmers" "${temp_directory}/${RandName}/${RandName}.graphnodes" -ci2 intersect "${temp_directory}/${RandName}/${RandName}.duplicated"
-kmc_tools -t1 transform "${temp_directory}/${RandName}/${RandName}.duplicated" dump "$output_base.duplicated.txt"
+kmc_tools -hp -t1 simple "${temp_directory}/${RandName}/${RandName}_allUniqKmers" "${temp_directory}/${RandName}/${RandName}.graphnodes" -ci2 intersect "${temp_directory}/${RandName}/${RandName}.duplicated"
+kmc_tools -hp -t1 transform "${temp_directory}/${RandName}/${RandName}.duplicated" dump "$output_base.duplicated.txt"
 
 # Run KMC tools for intersect & identify unique kmers presents 2 or more times in the graph
-kmc_tools -t1 simple "${temp_directory}/${RandName}/${RandName}_allUniqKmers" "${temp_directory}/${RandName}/${RandName}.graphnodes" kmers_subtract "${temp_directory}/${RandName}/${RandName}.colapsed"
-kmc_tools -t1 transform "${temp_directory}/${RandName}/${RandName}.colapsed" dump "$output_base.colapsed.txt"
+kmc_tools -hp -t1 simple "${temp_directory}/${RandName}/${RandName}_allUniqKmers" "${temp_directory}/${RandName}/${RandName}.graphnodes" kmers_subtract "${temp_directory}/${RandName}/${RandName}.colapsed"
+kmc_tools -hp -t1 transform "${temp_directory}/${RandName}/${RandName}.colapsed" dump "$output_base.colapsed.txt"
 
 echo  "[$((`date +%s`-start)) sec] Comparing Sets of Kmers : DONE"
 
