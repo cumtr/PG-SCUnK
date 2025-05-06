@@ -129,7 +129,7 @@ The default value, 100, performed well in our benchmarking.
 
 **`scripts/GFA2HaploFasta.bash`**
 
-This script is useful to extract the assemblies from a graph. **Before using it, make sure the graph was not trimmed in any way and contain the full assemblies** (raw output from `pggb` or `minigraph-cactus` for example). This script accept the graph in .gfa and .og format.
+This script is useful to extract the assemblies from a graph. Before using it, **make sure the graph was not trimmed in any way and contain the full assemblies** (raw output from `pggb` or `minigraph-cactus` for example) and that **the name of the sequences follow the [PanSN](https://github.com/pangenome/PanSN-spec) naming scheme**. This script accept the graph in .gfa and .og format.
 
 `Usage: ./scripts/GFA2HaploFasta.bash -p <panGenome.gfa> -t <tempDir> -o <outDir> -@ <threads>`
 
