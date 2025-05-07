@@ -4,7 +4,7 @@
 # see PG-SCUnK webpage for details
 # Developer : Tristan CUMER - t.cumer.sci[at]gmail.com
 
-# Version : 1.0 - 05/04/2025
+# Version : 1.1 - 07/05/2025
 
 # Function to display help message
 usage() {
@@ -30,14 +30,47 @@ fi
 
 # Generate a random name
 RandName=$(echo $RANDOM | md5sum | head -c 6)
-echo "Random ID :" ${RandName}
+echo "[INFO] Random ID :" ${RandName}
 
 # Create the temporary directory
 # mkdir -p ${TEMPDIR}/${RandName}
 mkdir -p ${OUTDIR}
 
 #### Process the Pan Genome ####
-echo "Extracting the multifasta from the graph"
+
+echo "[INFO] Testing if the graph is in the right format"
+# test if the graph is in the good format
+test_gfa1_format() {
+    awk '
+        BEGIN { has_header = 0; is_gfa1 = 0; has_p = 0 }
+        $1 == "H" {
+            has_header = 1;
+            if ($0 ~ /VN:Z:1\.0/) {
+                is_gfa1 = 1
+            }
+        }
+        $1 == "P" { has_p = 1 }
+        END {
+            if (!has_header) {
+                print "[FAIL] No header found → cannot determine GFA version. Please check your .gfa file";
+                exit 3;
+            }
+            if (!is_gfa1) {
+                print "[FAIL] Header indicates NOT GFA 1.0. consider converting your file into gfa1 using : vg convert -gfW <panGenome>";
+                exit 1;
+            }
+            if (!has_p) {
+                print "[FAIL] No P lines found → invalid GFA 1.0 for paths";
+                exit 2;
+            }
+            print "[OK] GFA 1.0 format detected with P lines";
+            exit 0;
+        }
+    ' $1
+}
+test_gfa1_format ${PG} || exit 1
+
+echo "[INFO] Extracting the multifasta from the graph"
 
 # Extract the fasta with all the assemblies & index it
 odgi paths -t ${THREADS} -f -i ${PG} > ${TEMPDIR}/${RandName}.full.fa
@@ -47,7 +80,7 @@ odgi paths -t ${THREADS} -f -i ${PG} > ${TEMPDIR}/${RandName}.full.fa
 samtools faidx ${TEMPDIR}/${RandName}.full.fa
 
 #### Process the multifasta ####
-echo "Splitting of the mulifasta per haplotype"
+echo "[INFO] Splitting of the mulifasta per haplotype"
 
 # Identify Haplotype names assuming PanSN formatting
 cut -f 1 ${TEMPDIR}/${RandName}.full.fa.fai | awk -F"#" '{print $1"#"$2}' | sort | uniq > ${TEMPDIR}/${RandName}.ListHaplotypes.txt
@@ -55,7 +88,7 @@ cut -f 1 ${TEMPDIR}/${RandName}.full.fa.fai | awk -F"#" '{print $1"#"$2}' | sort
 # Loop over the haplotypes to extract independent haplotype files
 (cat ${TEMPDIR}/${RandName}.ListHaplotypes.txt) | while read Haplo
 do 
-    echo "Processing $Haplo"
+    echo "       Processing $Haplo"
     samtools faidx ${TEMPDIR}/${RandName}.full.fa $(cut -f 1 ${TEMPDIR}/${RandName}.full.fa.fai | grep $Haplo | tr '\n' ' ') > ${OUTDIR}/${Haplo}.${RandName}.fasta
 done 
 
@@ -64,4 +97,4 @@ rm ${TEMPDIR}/${RandName}.full.fa
 rm ${TEMPDIR}/${RandName}.full.fa.fai
 rm ${TEMPDIR}/${RandName}.ListHaplotypes.txt
 
-echo "Processing completed. Haplotypes extracted to ${OUTDIR}"
+echo "[INFO] Processing completed. Haplotypes extracted to ${OUTDIR}"
