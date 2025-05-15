@@ -41,25 +41,25 @@ pdf(file = args[2], width = 10, height = 10)
 layout(matrix(1:4, ncol = 2, byrow = TRUE))
 par(mar = rep(0.5, 4))
 
-TernaryPlot(region = list(min=c(0,0,0), max=c(100,100,100)), alab = "Unique", blab = "Duplicated", clab = "Colapsed")
+TernaryPlot(region = list(min=c(0,0,0), max=c(100,100,100)), alab = "Unique", blab = "Duplicated", clab = "Split")
 legend("topleft", legend = "0-100%", bty = "n")
 for(i in 1:nrow(Data)){
   AddToTernary(graphics::points, Data[i,c(2:4)], pch = 20)
 }
 
-TernaryPlot(region = list(min=c(50,0,0), max=c(100,50,50)), alab = "Unique", blab = "Duplicated", clab = "Colapsed")
+TernaryPlot(region = list(min=c(50,0,0), max=c(100,50,50)), alab = "Unique", blab = "Duplicated", clab = "Split")
 legend("topleft", legend = "50-100%", bty = "n")
 for(i in 1:nrow(Data)){
   AddToTernary(graphics::points, Data[i,c(2:4)], pch = 20)
 }
 
-TernaryPlot(region = list(min=c(90,0,0), max=c(100,50,50)), alab = "Unique", blab = "Duplicated", clab = "Colapsed")
+TernaryPlot(region = list(min=c(90,0,0), max=c(100,50,50)), alab = "Unique", blab = "Duplicated", clab = "Split")
 legend("topleft", legend = "90-100%", bty = "n")
 for(i in 1:nrow(Data)){
   AddToTernary(graphics::points, Data[i,c(2:4)], pch = 20)
 }
 
-TernaryPlot(region = list(min=c(97.5,0,0), max=c(100,50,50)), alab = "Unique", blab = "Duplicated", clab = "Colapsed")
+TernaryPlot(region = list(min=c(97.5,0,0), max=c(100,50,50)), alab = "Unique", blab = "Duplicated", clab = "Split")
 legend("topleft", legend = "97.5-100%", bty = "n")
 for(i in 1:nrow(Data)){
   AddToTernary(graphics::points, Data[i,c(2:4)], pch = 20)

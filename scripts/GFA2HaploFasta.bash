@@ -33,50 +33,64 @@ RandName=$(echo $RANDOM | md5sum | head -c 6)
 echo "[INFO] Random ID :" ${RandName}
 
 # Create the temporary directory
-# mkdir -p ${TEMPDIR}/${RandName}
 mkdir -p ${OUTDIR}
+# mkdir -p ${TEMPDIR}/${RandName}
 
 #### Process the Pan Genome ####
 
-echo "[INFO] Testing if the graph is in the right format"
-# test if the graph is in the good format
-test_gfa1_format() {
-    awk '
-        BEGIN { has_header = 0; is_gfa1 = 0; has_p = 0 }
-        $1 == "H" {
-            has_header = 1;
-            if ($0 ~ /VN:Z:1\.0/) {
-                is_gfa1 = 1
-            }
-        }
-        $1 == "P" { has_p = 1 }
-        END {
-            if (!has_header) {
-                print "[FAIL] No header found → cannot determine GFA version. Please check your .gfa file";
-                exit 3;
-            }
-            if (!is_gfa1) {
-                print "[FAIL] Header indicates NOT GFA 1.0. consider converting your file into gfa1 using : vg convert -gfW <panGenome>";
-                exit 1;
-            }
-            if (!has_p) {
-                print "[FAIL] No P lines found → invalid GFA 1.0 for paths";
-                exit 2;
-            }
-            print "[OK] GFA 1.0 format detected with P lines";
-            exit 0;
-        }
-    ' $1
-}
-test_gfa1_format ${PG} || exit 1
+echo "[INFO] Testing if the graph is in a valid format"
+# # test if the graph is in the good format
+# test_gfa1_format() {
+#     awk '
+#         BEGIN { has_header = 0; is_gfa1 = 0; has_p = 0 }
+#         $1 == "H" {
+#             has_header = 1;
+#             if ($0 ~ /VN:Z:1\.0/) {
+#                 is_gfa1 = 1
+#             }
+#         }
+#         $1 == "P" { has_p = 1 }
+#         END {
+#             if (!has_header) {
+#                 print "[FAIL] No header found → cannot determine GFA version. Please check your .gfa file";
+#                 exit 3;
+#             }
+#             if (!is_gfa1) {
+#                 print "[FAIL] Header indicates NOT GFA 1.0. consider converting your file into gfa1 using : vg convert -gfW <panGenome>";
+#                 exit 1;
+#             }
+#             if (!has_p) {
+#                 print "[FAIL] No P lines found → invalid GFA 1.0 for paths";
+#                 exit 2;
+#             }
+#             print "[OK] GFA 1.0 format detected with P lines";
+#             exit 0;
+#         }
+#     ' $1
+# }
+# test_gfa1_format ${PG} || exit 1
+
+vg validate test.convert.gfa >${TEMPDIR}/${RandName}.validate.out.txt 2>${TEMPDIR}/${RandName}.validate.err.txt
+
+if ! grep -q "graph: valid" "${TEMPDIR}/${RandName}.validate.err.txt"; then
+  echo "       Graph is not valid, please make sure your graph follows gfa formating specs."
+  rm ${TEMPDIR}/${RandName}.validate.out.txt 
+  rm ${TEMPDIR}/${RandName}.validate.err.txt
+  exit 1
+fi
+
+if grep -q "graph: valid" "${TEMPDIR}/${RandName}.validate.err.txt"; then
+  echo "       Graph is valid."
+  rm ${TEMPDIR}/${RandName}.validate.out.txt 
+  rm ${TEMPDIR}/${RandName}.validate.err.txt
+fi
 
 echo "[INFO] Extracting the multifasta from the graph"
 
 # Extract the fasta with all the assemblies & index it
-odgi paths -t ${THREADS} -f -i ${PG} > ${TEMPDIR}/${RandName}.full.fa
+vg paths --extract-fasta -x ${PG} > ${TEMPDIR}/${RandName}.full.fa
 
 # Index the panGenome fasta using samtools
-# Assuming samtools is available, loading necessary modules
 samtools faidx ${TEMPDIR}/${RandName}.full.fa
 
 #### Process the multifasta ####
@@ -97,4 +111,4 @@ rm ${TEMPDIR}/${RandName}.full.fa
 rm ${TEMPDIR}/${RandName}.full.fa.fai
 rm ${TEMPDIR}/${RandName}.ListHaplotypes.txt
 
-echo "[INFO] Processing completed. Haplotypes extracted to ${OUTDIR}"
+echo "[INFO] Processing completed. Haplotypes extracted to: ${OUTDIR}/"

@@ -6,7 +6,7 @@ We assume that single-copy *k*-mers found in an assembly and universally present
 We thus propose simple metrics to describe a pan-genome graph based on the proportion of single-copy and universal *k*-mers composing the assemblies that are:
 - _**Unique**_: Present only once and in full length in one of the nodes of the graph.
 - _**Duplicated**_: Present multiple times in the graph.
-- _**Collapsed**_: Fragmented over different nodes due to the aggregation of non-orthologous sequences.
+- _**Split**_: Fragmented over different nodes due to the aggregation of non-orthologous sequences.
 
 The pipeline relies on [KMC](https://github.com/refresh-bio/KMC) to identify single-copy *k*-mers shared by all the assemblies (i.e., universal) composing a pan-genome graph.
 
@@ -16,34 +16,34 @@ bellow is a schematic representation of the `PG-SCUnK` workflow, please read the
 
 ---
 
-## 1. Installation
+## Installation
 
 ### Install the dependencies in a dedicated environment.
 
-`PG-SCUnK` requires `kmc` and `kmc_tools`  to be installed and available in your `$PATH`.
-Companions scripts require _samtools_ and _odgi_ for **_GFA2HaploFasta.bash_** and _zlib_ and _R_ for **_PG-SCUnK_plot.R_**
+**_`PG-SCUnK`_** requires `kmc` and `kmc_tools`  to be installed and available in your `$PATH`.
+Companions scripts also require `samtools` and `vg` for **_`GFA2HaploFasta.bash`_**, `zlib` and `R` for **_`PG-SCUnK_plot.R`_** as well as `bwa` and `bedtools` for **_`FindSCUnKsRegions.bash`_**.
 
 All the dependence can be installed by running:
 
 ```
 # Using mamba 
-mamba install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 conda-forge::r-base 
+mamba install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::vg=1.65.0 conda-forge::zlib=1.3.1 conda-forge::r-base bioconda::bwa=0.7.19 bioconda::bedtools=2.31.1 
 
 # Using conda
-# conda install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 conda-forge::r-base
+# conda install bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::vg=1.65.0 conda-forge::zlib=1.3.1 conda-forge::r-base bioconda::bwa=0.7.19 bioconda::bedtools=2.31.1 
 ```
 
 Creating a dedicated environment is a convenient way to ensure no interference with other software.
 
 ```
 # Using mamba 
-mamba create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 conda-forge::r-base
+mamba create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::vg=1.65.0 conda-forge::zlib=1.3.1 conda-forge::r-base bioconda::bwa=0.7.19 bioconda::bedtools=2.31.1 
 # then load the environment before running PG-SCUnK with:
 
 mamba activate PG-SCUnK-env
 
 # Using conda
-# conda create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::odgi=0.9.0 conda-forge::zlib=1.3.1 conda-forge::r-base
+# conda create -n PG-SCUnK-env bioconda::kmc=3.2.4 bioconda::samtools=1.21 bioconda::vg=1.65.0 conda-forge::zlib=1.3.1 conda-forge::r-base bioconda::bwa=0.7.19 bioconda::bedtools=2.31.1 
 # conda activate PG-SCUnK-env
 ```
 
@@ -71,7 +71,7 @@ This command should print the help line for `PG-SCUnK`:
 
 ---
 
-## 2. Running PG-SCUnK
+## Running PG-SCUnK
 
 To run, PG-SCUnK require four informations:
 - **`-p`** path to the graph in `.gfa` format
@@ -91,15 +91,23 @@ A typical command would be:
 
 This command produces five distinct files:
 
-- `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.stats.txt` : Contains counts of _**single-copy and universal**_ *k*-mers, _**unique**_ *k*-mers, _**duplicated**_ *k*-mers, and _**collapsed**_ *k*-mers in the graph.
+- `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.stats.txt` : Contains counts of _**single-copy and universal**_ *k*-mers, _**unique**_ *k*-mers, _**duplicated**_ *k*-mers, and _**split**_ *k*-mers in the graph.
 
 the four other files report the *k*-mers for the different categories:
 
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.all.txt`: List of all _**Single-Copy and Universal**_ *k*-mers.
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.unique.txt`: List of _**unique**_ *k*-mers.
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.duplicated.txt`: List of _**duplicated**_ *k*-mers.
-- `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.collapsed.txt`: List of _**collapsed**_ *k*-mers.
+- `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.split.txt`: List of _**split**_ *k*-mers.
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.log`: log file.
+
+---
+
+## Recommandations while using PG-SCUnK
+
+**PG-SCUnK** its companion scripts are designed to assess pan-genome graph quality using single-copy and universal *k*-mers.  
+Before running the tools, ensure that the graph has not been trimmed and contains the complete assemblies (e.g., raw output from tools `pggb` or `minigraph-cactus` for example) 
+**PG-SCUnK** assumes that sequence names follow the PanSN naming scheme. If your sequences use a different naming scheme, the tool may still run, but we cannot guarantee the quality or accuracy of the results.
 
 ---
 
@@ -119,28 +127,77 @@ When *k*-mers are too long, they are more likely to be broken by polymorphisms. 
 When *k*-mers are too short, the opposite problem occurs: they tend to lack specificity, making them less unique and less universal.
 
 Our tests suggest that choosing a k value between 31 and 150 provides consistent results.
-The default value, 100, performed well in our benchmarking.
-
+The default value, 100, performed well in our benchmarking but we strongly advise you to run `PG-SCUnK` with different `-k` value and check the conscistency of the resutls.
 ---
 
 ## Companion scripts
 
 `PG-SCUnK` comes with companion scripts.
 
+## 
+
 **`scripts/GFA2HaploFasta.bash`**
 
-This script is useful to extract the assemblies from a graph. Before using it, **make sure the graph was not trimmed in any way and contain the full assemblies** (raw output from `pggb` or `minigraph-cactus` for example) and that **the name of the sequences follow the [PanSN](https://github.com/pangenome/PanSN-spec) naming scheme**. This script accept the graph in .gfa and .og format.
+This script is useful to extract the assemblies from a graph. Before using it, **make sure the graph was not trimmed in any way and contain the full assemblies** (raw output from `pggb` or `minigraph-cactus` for example) and that **the name of the sequences follow the [PanSN](https://github.com/pangenome/PanSN-spec) naming scheme**. This script accept graph in .gfa format.
 
 `Usage: ./scripts/GFA2HaploFasta.bash -p <panGenome.gfa> -t <tempDir> -o <outDir> -@ <threads>`
 
-this script requires _samtools_ and _odgi_ to be present in you path. you can install them in the environment using: 
-`mamba install -n PG-SCUnK-env bioconda::samtools=1.21 bioconda::odgi=0.9.0`
+this script requires `samtools` and `vg` to be present in you path. you can install them in the environment using: 
+`mamba install -n PG-SCUnK-env bioconda::samtools=1.21 bioconda::vg=1.65.0`
+
+## 
 
 **`scripts/PG-SCUnK_plot.R`**
 
-this script uses _R_ to make a triangular plot for a given a `.stats.txt` output file from `PG-SCUnK`.
-You can install _R_ in the environment using : 
-`mamba install -n PG-SCUnK-env bioconda::samtools=1.21 bioconda::R=0.9.0`
+this script uses `R` to make a ternary plot for a given a `.stats.txt` output file from `PG-SCUnK`.
+
+`Usage: ./scripts/GFA2HaploFasta.bash -p <panGenome.gfa> -t <tempDir> -o <outDir> -@ <threads>`
+
+This script will produce a [*ternary plot*](https://en.wikipedia.org/wiki/Ternary_plot) as illustrated bellow. 
+
+![](images/ToyTernaryPlot.png)
+
+**How to read a ternary plot:**
+A ternary plot is a triangular diagram where each point represents a mixture of three components that sum to 100%.
+    Each corner stands for 100% of one component and 0% of the others.
+    Each point inside the triangle reflects a specific proportion of all three.
+
+To estimate values for a point:
+    Draw lines from the point parallel to the side opposite each corner.
+    Where each line intersects the triangle’s edge indicates the percentage of that component.
+    The sum of the three percentages will always equal 100%.
+    Points closer to a corner = more of that component.
+    Points near an edge = less of the component at the opposite corner.
+
+In the example above, the dot corespond to a graph with XXXX % of unique SCUnKs, XXX % of duplicated SCUnKs and XXX % of split SCUnKs.
+
+You can install the dependancy required by `PG-SCUnK_plot.R` in the environment using : 
+`mamba install -n PG-SCUnK-env bioconda::R=0.9.0`
+
+## 
+
+**`scripts/FindSCUnKsRegions.bash`**
+
+this script uses `bwa`, `samtools`, `bedtools` and `R` to identify the location of the unique, duplicated and split SCUnKs in a given reference genome.
+It uses the `.unique.txt`, `.duplicated.txt` and the `.split.txt` output file from `PG-SCUnK`.
+
+`Usage: ./scripts/FindRegions.bash -b <basename> -r <reference> -t <tempDir> -o <outDir> -@ <threads>`
+
+This script will produce new files in the proivided `OutDir`:
+
+- `.SCUnKs.unique.bed`: a bed file with the coordinates of the regions covered by **_unique_** SCUnKs.
+- `.SCUnKs.duplicated.bed`: a bed file with the coordinates of the regions covered by **_unique_** SCUnKs.
+- `.SCUnKs.colapsed.bed`:: a bed file with the coordinates of the regions covered by **_unique_** SCUnKs.
+- `.SCUnKs.log`: log file.
+
+This script will also produce a plot `.SCUnKs.position.png` presenting the distribtion of the _unique_, _duplicated_ and _split_ SCUnKs along the reference genome, as illustrated bellow. 
+
+![](images/ToySCUnKsRegions.png)
+
+in this plot, each track represent the location of each type of SCUnK along the same genome.
+
+You can install the dependances required by `FindSCUnKsRegions.bash` in the environment using : 
+`mamba install -n PG-SCUnK-env bioconda::bwa=0.7.19 bioconda::samtools=1.21 bioconda::bedtools=2.31.1 bioconda::R=0.9.0`
 
 ---
 
@@ -162,8 +219,11 @@ bash /path/to/PG-SCUnK/scripts/GFA2HaploFasta.bash -p ecoli50.gfa -t TEMP -o eco
 # Run PG-SCUnK
 /path/to/PG-SCUnK/PG-SCUnK -p ecoli50.gfa -a ecoli50 -o Out_PG-SCUnK/ecoli50 -t TEMP -k 100
 
-# Create a Ternary plot of the results
+# Create a Ternary plot of the results from PG-SCUnK
 Rscript --vanilla /path/to/PG-SCUnK/scripts/PG-SCUnK_plot.R Out_PG-SCUnK/ecoli50.stats.txt Out_PG-SCUnK/ecoli50.out.pdf
+
+# Locate the SCUnKs along the reference genome
+bash /path/to/PG-SCUnK/scripts/FindRegions.bash -b Out_PG-SCUnK/ecoli50 -r ecoli50 -t TEMP -o Out_PG-SCUnK/GCF_016403625.2*.fasta -@ 1
 ```
 
 ---
@@ -171,6 +231,12 @@ Rscript --vanilla /path/to/PG-SCUnK/scripts/PG-SCUnK_plot.R Out_PG-SCUnK/ecoli50
 ## Citation
 
 If you use `PG-SCUnK`, please cite our [paper](https://www.biorxiv.org/content/10.1101/2025.04.03.646777v1).
+
+---
+
+## New Ideas ?
+
+If you think of a possible improvement to the `PG-SCUnK` workflow (or useful new companion script[s]), please DM me at t.cumer.sci[@]gmail.com or open a new issue.
 
 ---
 
