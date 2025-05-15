@@ -128,6 +128,7 @@ When *k*-mers are too short, the opposite problem occurs: they tend to lack spec
 
 Our tests suggest that choosing a k value between 31 and 150 provides consistent results.
 The default value, 100, performed well in our benchmarking but we strongly advise you to run `PG-SCUnK` with different `-k` value and check the conscistency of the resutls.
+
 ---
 
 ## Companion scripts
