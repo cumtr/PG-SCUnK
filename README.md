@@ -156,7 +156,7 @@ this script uses `R` to make a ternary plot for a given a `.stats.txt` output fi
 
 This script will produce a [*ternary plot*](https://en.wikipedia.org/wiki/Ternary_plot) as illustrated bellow. 
 
-![](images/ToyTernaryPlot.png)
+![](images/ToyTernaryPlot.png =250x)
 
 **How to read a ternary plot:**
 A ternary plot is a triangular diagram where each point represents a mixture of three components that sum to 100%.
@@ -195,7 +195,7 @@ This script will also produce a plot `.SCUnKs.position.png` presenting the distr
 
 ![](images/ToySCUnKsRegions.png)
 
-n this plot, the header reports the name of the linear genome used as the reference, along with the proportion of the genome covered by SCUnKs (in this case, 19.92%). The numbers in square brackets indicate the proportions of the genome covered by Unique (U), Duplicated (D), and Split (S) SCUnKs.
+In this plot, the header reports the name of the linear genome used as the reference, along with the proportion of the genome covered by SCUnKs (in this case, 19.92%). The numbers in square brackets indicate the proportions of the genome covered by Unique (U), Duplicated (D), and Split (S) SCUnKs.
 Below, each track represents the locations of each SCUnK type along the linear genome.
 
 You can install the dependances required by `FindSCUnKsRegions.bash` in the environment using : 
