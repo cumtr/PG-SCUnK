@@ -170,7 +170,7 @@ To estimate values for a point:
     Points closer to a corner = more of that component.
     Points near an edge = less of the component at the opposite corner.
 
-In the example above, the dot corespond to a graph with XXXX % of unique SCUnKs, XXX % of duplicated SCUnKs and XXX % of split SCUnKs.
+In the example above, the dot corespond to a graph with 98.5% of unique SCUnKs, 0.5% of duplicated SCUnKs and 1% of split SCUnKs.
 
 You can install the dependancy required by `PG-SCUnK_plot.R` in the environment using : 
 `mamba install -n PG-SCUnK-env bioconda::R=0.9.0`
