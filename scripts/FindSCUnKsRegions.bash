@@ -113,7 +113,8 @@ PartSplit = (sum(TabSplit[,3]-TabSplit[,2])/${LEN})*100
 PartSCUnKs = sum(PartUniq, PartDup, PartSplit)
 
 # Plotting the repartition of the SCUnKs along the genome
-png(paste0("${OUTDIR}/${BASE}",".SCUnKs.position.png") , width = 12, height = 3, units = "in", res = 300)
+
+png(paste0("${OUTDIR}/${BASE}",".SCUnKs.position.png") , width = 10, height = 3, units = "in", res = 300)
 
 par(mar=c(5,5,3,2))
 
@@ -130,14 +131,15 @@ rect(1, 0.25, ${LEN}, 0.45, lwd = 1.5, border = NA, col = "grey95")
 rect(1, 0.50, ${LEN}, 0.7, lwd = 1.5, border = NA, col = "grey95")
 
 for(i in 1:nrow(TabUniq)){
-  rect(TabUniq[i,2],0.5, TabUniq[i,3], 0.7, border = "grey40", col = "grey40", lwd=0)
+  rect(TabUniq[i,2],0.5, TabUniq[i,3], 0.7, border = NA, col = "grey40", lwd=0)
 }
 for(i in 1:nrow(TabDup)){
-  rect(TabDup[i,2],0.25, TabDup[i,3], 0.45, border = "darkorange", col = "darkorange", lwd=0)
+  rect(TabDup[i,2],0.25, TabDup[i,3], 0.45, border = NA, col = "darkorange", lwd=0)
 }
 for(i in 1:nrow(TabSplit)){
-  rect(TabSplit[i,2],0, TabSplit[i,3], 0.2, border = "darkblue", col = "darkblue", lwd=0)
+  rect(TabSplit[i,2],0, TabSplit[i,3], 0.2, border = NA, col = "darkblue", lwd=0)
 }
+
 rect(1, 0, ${LEN}, 0.2, lwd = 1.5, border = "grey70", col = NA)
 rect(1, 0.25, ${LEN}, 0.45, lwd = 1.5, border = "grey70", col = NA)
 rect(1, 0.50, ${LEN}, 0.7, lwd = 1.5, border = "grey70", col = NA)

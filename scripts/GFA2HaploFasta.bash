@@ -70,7 +70,7 @@ echo "[INFO] Testing if the graph is in a valid format"
 # }
 # test_gfa1_format ${PG} || exit 1
 
-vg validate test.convert.gfa >${TEMPDIR}/${RandName}.validate.out.txt 2>${TEMPDIR}/${RandName}.validate.err.txt
+vg validate ${PG} >${TEMPDIR}/${RandName}.validate.out.txt 2>${TEMPDIR}/${RandName}.validate.err.txt
 
 if ! grep -q "graph: valid" "${TEMPDIR}/${RandName}.validate.err.txt"; then
   echo "       Graph is not valid, please make sure your graph follows gfa formating specs."

@@ -3,11 +3,9 @@
 #                                                                              #
 #                R code for plotting the results of PG-SCUnK                   #
 #                                                                              #
-#                 Tristan CUMER - t.cumer.sci[at]gmail.com                     # 
-#                                                                              #
 ################################################################################
 
-# USAGE : 
+# USAGE:
 # Rscript --vanilla PG-SCUnK_plot.R file.stats.txt out.pdf
 
 #### Set up the environement #####
@@ -25,8 +23,9 @@ if (length(args)==0) {
 
 # Check if package missing, if yes install, then load it
 if(!require(Ternary)){
-  install.packages("Ternary",repos = "http://cran.us.r-project.org")
+  install.packages("Ternary", repos = "http://cran.us.r-project.org")
 }
+
 library(Ternary)
 
 #### read the data #####

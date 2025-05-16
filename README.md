@@ -114,7 +114,7 @@ Before running the tools, ensure that the graph has not been trimmed and contain
 ## Choosing the best *k*-mer size
 
 The **`-k`** parameter, which sets the *k*-mer size, is the only parameter that the user can specify in the PG-SCUnK workflow.
-Choosing the best possible k requires understanding a few key aspects of how PG-SCUnK works.
+Choosing the best possible k requires understanding a few key aspects of how `PG-SCUnK` works.
 
 **Even or Odd?**
 
@@ -195,7 +195,8 @@ This script will also produce a plot `.SCUnKs.position.png` presenting the distr
 
 ![](images/ToySCUnKsRegions.png)
 
-in this plot, each track represent the location of each type of SCUnK along the same genome.
+n this plot, the header reports the name of the linear genome used as the reference, along with the proportion of the genome covered by SCUnKs (in this case, 19.92%). The numbers in square brackets indicate the proportions of the genome covered by Unique (U), Duplicated (D), and Split (S) SCUnKs.
+Below, each track represents the locations of each SCUnK type along the linear genome.
 
 You can install the dependances required by `FindSCUnKsRegions.bash` in the environment using : 
 `mamba install -n PG-SCUnK-env bioconda::bwa=0.7.19 bioconda::samtools=1.21 bioconda::bedtools=2.31.1 bioconda::R=0.9.0`
@@ -220,11 +221,11 @@ bash /path/to/PG-SCUnK/scripts/GFA2HaploFasta.bash -p ecoli50.gfa -t TEMP -o eco
 # Run PG-SCUnK
 /path/to/PG-SCUnK/PG-SCUnK -p ecoli50.gfa -a ecoli50 -o Out_PG-SCUnK/ecoli50 -t TEMP -k 100
 
-# Create a Ternary plot of the results from PG-SCUnK
+# Create a Ternary plot of the results from PG-SCUnK. Running this script for the first time takes some time to install the packages and their dependances.
 Rscript --vanilla /path/to/PG-SCUnK/scripts/PG-SCUnK_plot.R Out_PG-SCUnK/ecoli50.stats.txt Out_PG-SCUnK/ecoli50.out.pdf
 
 # Locate the SCUnKs along the reference genome
-bash /path/to/PG-SCUnK/scripts/FindRegions.bash -b Out_PG-SCUnK/ecoli50 -r ecoli50 -t TEMP -o Out_PG-SCUnK/GCF_016403625.2*.fasta -@ 1
+bash /path/to/PG-SCUnK/scripts/FindSCUnKsRegions.bash -b Out_PG-SCUnK/ecoli50 -r ecoli50/GCF_016403625.2*.fasta -t TEMP -o Out_PG-SCUnK/ -@ 1
 ```
 
 ---
