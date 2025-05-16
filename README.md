@@ -156,7 +156,7 @@ this script uses `R` to make a ternary plot for a given a `.stats.txt` output fi
 
 This script will produce a [*ternary plot*](https://en.wikipedia.org/wiki/Ternary_plot) as illustrated bellow. 
 
-![](images/ToyTernaryPlot.png =250x)
+![](images/ToyTernaryPlot.png)
 
 **How to read a ternary plot:**
 A ternary plot is a triangular diagram where each point represents a mixture of three components that sum to 100%.
