@@ -7,6 +7,8 @@
 
 # USAGE:
 # Rscript --vanilla PG-SCUnK_plot.R file.stats.txt out.pdf
+# see PG-SCUnK webpage for details : https://github.com/cumtr/PG-SCUnK
+# Developer : Tristan CUMER - t.cumer.sci[at]gmail.com
 
 #### Set up the environement #####
 
@@ -23,9 +25,10 @@ if (length(args)==0) {
 
 # Check if package missing, if yes install, then load it
 if(!require(Ternary)){
-  install.packages("Ternary", repos = "http://cran.us.r-project.org")
+  install.packages("Ternary", repos = "http://cran.us.r-project.org", quiet = TRUE)
 }
 
+invisible(.libPaths())
 library(Ternary)
 
 #### read the data #####

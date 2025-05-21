@@ -1,10 +1,10 @@
 #!/bin/bash
 
 ### This code extract all the assemblies that compose a pan genome graph (.gfa) in distict fasta files ###
-# see PG-SCUnK webpage for details
+# see PG-SCUnK webpage for details : https://github.com/cumtr/PG-SCUnK
 # Developer : Tristan CUMER - t.cumer.sci[at]gmail.com
 
-# Version : 1.1 - 07/05/2025
+# Version : 21/05/2025
 
 # Function to display help message
 usage() {
@@ -39,36 +39,6 @@ mkdir -p ${OUTDIR}
 #### Process the Pan Genome ####
 
 echo "[INFO] Testing if the graph is in a valid format"
-# # test if the graph is in the good format
-# test_gfa1_format() {
-#     awk '
-#         BEGIN { has_header = 0; is_gfa1 = 0; has_p = 0 }
-#         $1 == "H" {
-#             has_header = 1;
-#             if ($0 ~ /VN:Z:1\.0/) {
-#                 is_gfa1 = 1
-#             }
-#         }
-#         $1 == "P" { has_p = 1 }
-#         END {
-#             if (!has_header) {
-#                 print "[FAIL] No header found → cannot determine GFA version. Please check your .gfa file";
-#                 exit 3;
-#             }
-#             if (!is_gfa1) {
-#                 print "[FAIL] Header indicates NOT GFA 1.0. consider converting your file into gfa1 using : vg convert -gfW <panGenome>";
-#                 exit 1;
-#             }
-#             if (!has_p) {
-#                 print "[FAIL] No P lines found → invalid GFA 1.0 for paths";
-#                 exit 2;
-#             }
-#             print "[OK] GFA 1.0 format detected with P lines";
-#             exit 0;
-#         }
-#     ' $1
-# }
-# test_gfa1_format ${PG} || exit 1
 
 vg validate ${PG} >${TEMPDIR}/${RandName}.validate.out.txt 2>${TEMPDIR}/${RandName}.validate.err.txt
 

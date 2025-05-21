@@ -1,5 +1,11 @@
 #!/bin/bash
 
+### This code map the SCUnKs identified by PG-SCUnKs on a given linear reference genome ###
+# see PG-SCUnK webpage for details : https://github.com/cumtr/PG-SCUnK
+# Developer : Tristan CUMER - t.cumer.sci[at]gmail.com
+
+# Version : 21/05/2025
+
 ## Parse command-line options ##
 usage() {
     echo "Usage: $0 -b <basename> -r <reference> -t <tempDir> -o <outDir> -@ <threads>"
@@ -35,10 +41,10 @@ echo "Output Directory: $OUTDIR"
 #   echo "Verbose mode is ON"
 # fi
 
-RandName=$(xxd -u -l 3 -p /dev/urandom)
-echo ""
-echo "Internal random ID :" ${RandName}
-echo ""
+# RandName=$(xxd -u -l 3 -p /dev/urandom)
+# echo ""
+# echo "Internal random ID :" ${RandName}
+# echo ""
 
 ## Check if reference is indexed ##
 if [ ! -f "${REFGENOME}.bwt" ]; then
@@ -65,21 +71,25 @@ for TYPE in "${TYPES[@]}"; do
     # Filenames for intermediate & output
     FASTQ_FILE="${TEMPDIR}/${BASE}.${TYPE}.fastq"
     SAM_FILE="${TEMPDIR}/${BASE}.${TYPE}.sam"
+    SAM_FILE_FILTERED="${TEMPDIR}/${BASE}.${TYPE}.filtered.sam"
     BAM_FILE="${TEMPDIR}/${BASE}.${TYPE}.sorted.bam"
     BED_FILE="${TEMPDIR}/${BASE}.${TYPE}.bed"
     MERGED_BED_FILE="${OUTDIR}/${BASE}.SCUnKs.${TYPE}.bed"
 
     #  Convert kmers to FASTQ 
     echo "       Converting k-mers to FASTQ for $TYPE SCUnKs"
-    awk '{qual=""; for(i=1;i<=length($0);i++) qual=qual "I"; printf("@seq%d\n%s\n+\n%s\n", NR, $0, qual)}' "$KMER_FILE" > "$FASTQ_FILE"
+    awk '{qual=""; for(i=1;i<=length($1);i++) qual=qual "I"; printf("@seq%d\n%s\n+\n%s\n", NR, $1, qual)}' "$KMER_FILE" > "$FASTQ_FILE"
 
     #  Map with bwa 
     echo "       Mapping $TYPE SCUnKs"
     bwa mem -t "$THREADS" "$REFGENOME" "$FASTQ_FILE" > "$SAM_FILE" 2>/dev/null
+    awk '$0 ~ /^@/ || $0 ~ /NM:i:0/' "$SAM_FILE" > "$SAM_FILE_FILTERED"
+    # bwa mem -t "$THREADS" "$REFGENOME" "$FASTQ_FILE" > "$SAM_FILE" # 2>/dev/null
+
 
     #  Convert SAM to sorted BAM 
     echo "       Converting and sorting BAM for $TYPE SCUnKs"
-    samtools view -@ "$THREADS" -bS "$SAM_FILE" | samtools sort -@ "$THREADS" -o "$BAM_FILE"
+    samtools view -@ "$THREADS" -bS "$SAM_FILE_FILTERED" | samtools sort -@ "$THREADS" -o "$BAM_FILE"
     samtools index "$BAM_FILE"
 
     #  Extract mapped regions 
@@ -87,7 +97,7 @@ for TYPE in "${TYPES[@]}"; do
     bedtools bamtobed -i "$BAM_FILE" > "$BED_FILE"
     bedtools merge -i "$BED_FILE" > "$MERGED_BED_FILE"
 
-    rm "$FASTQ_FILE" "$SAM_FILE" "$BAM_FILE"
+    rm "$FASTQ_FILE" "$SAM_FILE" "$SAM_FILE_FILTERED" "$BAM_FILE"
 
     echo "       Finished processing $TYPE."
     echo "       "
@@ -101,9 +111,21 @@ LEN=$(grep -v ">" "$REFGENOME" | tr -d '\n' | wc -c)
 R --vanilla <<EOF > ${OUTDIR}/${BASE}.SCUnKs.log
 
 # loading the bed files
-TabUniq = read.table(paste0("${OUTDIR}","/","${BASE}",".SCUnKs.unique.bed"), comment.char = "@", sep = "\t")
-TabDup = read.table(paste0("${OUTDIR}","/","${BASE}",".SCUnKs.duplicated.bed"), comment.char = "@", sep = "\t")
-TabSplit = read.table(paste0("${OUTDIR}","/","${BASE}",".SCUnKs.split.bed"), comment.char = "@", sep = "\t")
+
+# TabUniq = read.table(paste0("${OUTDIR}","/","${BASE}",".SCUnKs.unique.bed"), comment.char = "@", sep = "\t")
+FILE_UNIQ = paste0("${OUTDIR}","/","${BASE}",".SCUnKs.unique.bed")
+TabUniq = data.frame(t(c(NA, NA, NA))); colnames(TabUniq) = c("V1","V2","V3")
+if(file.exists(FILE_UNIQ) & file.size(FILE_UNIQ)!=0) {TabUniq = read.table(FILE_UNIQ, comment.char = "@", sep = "\t")}
+
+# TabDup = read.table(paste0("${OUTDIR}","/","${BASE}",".SCUnKs.duplicated.bed"), comment.char = "@", sep = "\t")
+FILE_DUP = paste0("${OUTDIR}","/","${BASE}",".SCUnKs.duplicated.bed")
+TabDup = data.frame(t(c(NA, NA, NA))); colnames(TabDup) = c("V1","V2","V3")
+if(file.exists(FILE_DUP) & file.size(FILE_DUP)!=0) {TabDup = read.table(FILE_DUP, comment.char = "@", sep = "\t")}
+
+# TabSplit = read.table(paste0("${OUTDIR}","/","${BASE}",".SCUnKs.split.bed"), comment.char = "@", sep = "\t")
+FILE_SPLIT = paste0("${OUTDIR}","/","${BASE}",".SCUnKs.split.bed")
+TabSplit = data.frame(t(c(NA, NA, NA))); colnames(TabSplit) = c("V1","V2","V3")
+if(file.exists(FILE_SPLIT) & file.size(FILE_SPLIT)!=0) {TabSplit = read.table(FILE_SPLIT, comment.char = "@", sep = "\t")}
 
 # computing proportions of the gneome in the different categories
 PartUniq = (sum(TabUniq[,3]-TabUniq[,2])/${LEN})*100

@@ -179,7 +179,7 @@ You can install the dependancies required by `PG-SCUnK_plot.R` in the environmen
 
 **`scripts/FindSCUnKsRegions.bash`**
 
-this script uses `bwa`, `samtools`, `bedtools` and `R` to identify the location of the unique, duplicated and split SCUnKs in a given reference genome.
+this script uses `bwa`, `samtools`, `bedtools` and `R` to identify the location of the unique, duplicated and split SCUnKs in a given reference genome by re-mapping the SCUnKs.
 It uses the `.unique.txt`, `.duplicated.txt` and the `.split.txt` output file from `PG-SCUnK`.
 
 `Usage: ./scripts/FindRegions.bash -b <basename> -r <reference> -t <tempDir> -o <outDir> -@ <threads>`
@@ -197,6 +197,8 @@ This script will also produce a plot `.SCUnKs.position.png` presenting the distr
 
 In this plot, the header reports the name of the linear genome used as the reference, along with the proportion of the genome covered by SCUnKs (in this case, 19.92%). The numbers in square brackets indicate the proportions of the genome covered by Unique (U), Duplicated (D), and Split (S) SCUnKs.
 Below, each track represents the locations of each SCUnK type along the linear genome.
+
+**Disclaimer**: The re-mapping of SCUnKs presented here is not fully equivalent to an exact *k*-mer lookup. However, the script focuses on SCUnKs that align perfectly to the reference (edit distance of 0). This approach was chosen to provide a computationally reasonable balance between accuracy and runtime. 
 
 You can install the dependancies required by `FindSCUnKsRegions.bash` in the environment using : 
 `mamba install -n PG-SCUnK-env bioconda::bwa=0.7.19 bioconda::samtools=1.21 bioconda::bedtools=2.31.1 bioconda::R=0.9.0`

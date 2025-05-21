@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# version 10.04.25
+# version 2.0 - 21/05/2025
 
 # set -e # exit on error
 start=`date +%s`
