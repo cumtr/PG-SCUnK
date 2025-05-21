@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# version 10.04.25
+# version 2.0 - 21/05/2025
 
 # set -e # exit on error
 start=`date +%s`
@@ -73,7 +73,7 @@ mkdir -p "$output_dir" "$temp_directory"
 [ -e $output_base.all.txt ] && rm $output_base.all.txt
 [ -e $output_base.uniq.txt ] && rm $output_base.uniq.txt
 [ -e $output_base.dup.txt ] && rm $output_base.dup.txt
-[ -e $output_base.collapsed.txt ] && rm $output_base.collapsed.txt
+[ -e $output_base.split.txt ] && rm $output_base.split.txt
 [ -e $output_base.stats.txt ] && rm $output_base.stats.txt
 
 #### Define usefull variables ####
@@ -168,8 +168,8 @@ kmc_tools -t1 ${verboseKMCtools:+"$verboseKMCtools"} simple "${temp_directory}/$
 kmc_tools -t1 ${verboseKMCtools:+"$verboseKMCtools"} transform "${temp_directory}/${RandName}/${RandName}.duplicated" dump "$output_base.duplicated.txt"
 
 # Run KMC tools for intersect & identify unique kmers presents 2 or more times in the graph
-kmc_tools -t1 ${verboseKMCtools:+"$verboseKMCtools"} simple "${temp_directory}/${RandName}/${RandName}_allUniqKmers" "${temp_directory}/${RandName}/${RandName}.graphnodes" kmers_subtract "${temp_directory}/${RandName}/${RandName}.collapsed"
-kmc_tools -t1 ${verboseKMCtools:+"$verboseKMCtools"} transform "${temp_directory}/${RandName}/${RandName}.collapsed" dump "$output_base.collapsed.txt"
+kmc_tools -t1 ${verboseKMCtools:+"$verboseKMCtools"} simple "${temp_directory}/${RandName}/${RandName}_allUniqKmers" "${temp_directory}/${RandName}/${RandName}.graphnodes" kmers_subtract "${temp_directory}/${RandName}/${RandName}.split"
+kmc_tools -t1 ${verboseKMCtools:+"$verboseKMCtools"} transform "${temp_directory}/${RandName}/${RandName}.split" dump "$output_base.split.txt"
 
 echo  "[$((`date +%s`-start)) sec] Comparing Sets of Kmers : DONE"
 
@@ -181,10 +181,10 @@ echo  "[$((`date +%s`-start)) sec] Comparing Sets of Kmers : DONE"
 kmer_total=`wc -l $output_base.all.txt | cut -f1 -d" "`
 kmer_uniq=`wc -l $output_base.unique.txt | cut -f1 -d" "`
 kmer_dup=`wc -l $output_base.duplicated.txt | cut -f1 -d" "`
-kmer_collapsed=`wc -l $output_base.collapsed.txt | cut -f1 -d" "`
+kmer_split=`wc -l $output_base.split.txt | cut -f1 -d" "`
 
-echo "#count_all_kmers count_unique_kmers count_duplicated_kmers count_collapsed_kmers" > $output_base.stats.txt
-echo $kmer_total $kmer_uniq $kmer_dup $kmer_collapsed >> $output_base.stats.txt
+echo "#count_all_kmers count_unique_kmers count_duplicated_kmers count_split_kmers" > $output_base.stats.txt
+echo $kmer_total $kmer_uniq $kmer_dup $kmer_split >> $output_base.stats.txt
 
 ###########################################
 
