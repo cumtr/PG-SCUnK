@@ -10,7 +10,7 @@ We thus propose simple metrics to describe a pan-genome graph based on the propo
 
 The pipeline relies on [KMC](https://github.com/refresh-bio/KMC) to identify single-copy *k*-mers shared by all the assemblies (i.e., universal) composing a pan-genome graph.
 
-below is a schematic representation of the `PG-SCUnK` workflow. Please read the [associated publication](https://www.biorxiv.org/content/10.1101/2025.04.03.646777v1) for details.
+below is a schematic representation of the `PG-SCUnK` workflow. Please read the [associated publication](https://www.biorxiv.org/content/10.1101/2025.04.03.646777v2) for details.
 
 ![](images/PG-SCUnK_workflow.png)
 
@@ -234,7 +234,7 @@ bash /path/to/PG-SCUnK/scripts/FindSCUnKsRegions.bash -b Out_PG-SCUnK/ecoli50 -r
 
 ## Citation
 
-If you use `PG-SCUnK`, please cite our [paper](https://www.biorxiv.org/content/10.1101/2025.04.03.646777v1).
+If you use `PG-SCUnK`, please cite our [paper](https://www.biorxiv.org/content/10.1101/2025.04.03.646777v2).
 
 ---
 
