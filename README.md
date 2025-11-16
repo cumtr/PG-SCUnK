@@ -10,7 +10,7 @@ We thus propose simple metrics to describe a pan-genome graph based on the propo
 
 The pipeline relies on [KMC](https://github.com/refresh-bio/KMC) to identify single-copy *k*-mers shared by all the assemblies (i.e., universal) composing a pan-genome graph.
 
-below is a schematic representation of the `PG-SCUnK` workflow. Please read the [associated publication](https://www.biorxiv.org/content/10.1101/2025.04.03.646777v3) for details.
+below is a schematic representation of the `PG-SCUnK` workflow. Please read the [associated publication](https://www.biorxiv.org/content/10.1101/2025.04.03.646777v1) for details.
 
 ![](images/PG-SCUnK_workflow.png)
 
@@ -21,7 +21,9 @@ below is a schematic representation of the `PG-SCUnK` workflow. Please read the 
 ### Install the dependencies in a dedicated environment.
 
 **_`PG-SCUnK`_** requires `kmc` and `kmc_tools`  to be installed and available in your `$PATH`.
-Companion scripts also require `samtools` and `vg` for **_`GFA2HaploFasta.bash`_**, `zlib` and `R` for **_`PG-SCUnK_plot.R`_** as well as `bwa` and `bedtools` for **_`FindSCUnKsRegions.bash`_**.
+
+
+Companion scripts also require `samtools` and `vg` for **_`GFA2HaploFasta.bash`_**, `zlib` and `R` for **_`PG-SCUnK_plot.R`_**, `bwa` and `bedtools` for **_`FindSCUnKsRegions.bash`_**, and `python` for **_`findDupliSCUnK.py`_**. Finally, **_`GetHistoKmers.bash`_** require the same dependances as **_`PG-SCUnK`_**.
 
 All the dependencies can be installed by running:
 
@@ -89,21 +91,24 @@ A typical command would be:
 ./PG-SCUnK -p ./MyPanGenomeGraph.gfa -a ./InputAssemblies/ -o ./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK -t ./TEMP/ -k 100
 ```
 
-This command produces five distinct files:
+This command produces seven distinct files:
 
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.stats.txt` : Contains counts of _**single-copy and universal**_ *k*-mers, _**unique**_ *k*-mers, _**duplicated**_ *k*-mers, and _**split**_ *k*-mers in the graph.
 
-The four other files report the *k*-mers for the different categories:
+Four other files report the *k*-mers for the different categories:
 
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.all.txt`: List of all _**Single-Copy and Universal**_ *k*-mers.
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.unique.txt`: List of _**unique**_ *k*-mers.
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.duplicated.txt`: List of _**duplicated**_ *k*-mers.
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.split.txt`: List of _**split**_ *k*-mers.
+
+Finally, two other files report various informations:
+- `./OutputPG-SCUnK/MyPanGenomeGraph.proportionSCUnK.txt`: Proportion of SCUnK in each assembly.
 - `./OutputPG-SCUnK/MyPanGenomeGraph.PG-SCUnK.log`: Log file.
 
 ---
 
-## Recommandations while using PG-SCUnK
+## Recommendations while using PG-SCUnK
 
 **PG-SCUnK** and its companion scripts are designed to assess pan-genome graph quality using single-copy and universal *k*-mers.  
 Before running the tools, ensure that the graph has not been trimmed and contains the complete assemblies (e.g., raw output from tools `pggb` or `minigraph-cactus` for example) 
@@ -154,7 +159,9 @@ this script uses `R` to make a ternary plot for a given a `.stats.txt` generated
 
 `Usage: ./scripts/GFA2HaploFasta.bash -p <panGenome.gfa> -t <tempDir> -o <outDir> -@ <threads>`
 
-This script will produce a [*ternary plot*](https://en.wikipedia.org/wiki/Ternary_plot) as illustrated below. 
+This script will produce two plots.
+
+The first plot is a [*ternary plot*](https://en.wikipedia.org/wiki/Ternary_plot) as illustrated below. 
 
 ![](images/ToyTernaryPlot.png)
 
@@ -171,6 +178,10 @@ To estimate values for a point:
     Points near an edge = less of the component at the opposite corner.
 
 In the example above, the dot coresponds to a graph with 98.5% of unique SCUnKs, 0.5% of duplicated SCUnKs and 1% of split SCUnKs.
+
+The second plot is a BUSCO-like barplot representing the proportion of unique, duplicated and split SCUnK. 
+
+![](images/ToyBarplot.png)
 
 You can install the dependancies required by `PG-SCUnK_plot.R` in the environment using : 
 `mamba install -n PG-SCUnK-env bioconda::R=0.9.0`
@@ -203,6 +214,19 @@ Below, each track represents the locations of each SCUnK type along the linear g
 You can install the dependancies required by `FindSCUnKsRegions.bash` in the environment using : 
 `mamba install -n PG-SCUnK-env bioconda::bwa=0.7.19 bioconda::samtools=1.21 bioconda::bedtools=2.31.1 bioconda::R=0.9.0`
 
+## 
+
+**`scripts/findDupliSCUnK.py`**
+
+this script help identify the nodes of the graph with duplicated SCUnKs.
+
+## 
+
+**`scripts/GetHistoKmers.bash`**
+
+This feature re-processes assemblies to build a histogram of k-mers shared across different quorum assemblies. It helps you:
+quantify the K-mers present in all assemblies indicate stable, core sequences and highlight variability acorss assemblies.
+
 ---
 
 ## Example workflow
@@ -210,31 +234,49 @@ You can install the dependancies required by `FindSCUnKsRegions.bash` in the env
 Here is an example workflow to run `PG-SCUnK` for a pan-genome build for 50 e.coli and published [here](https://www.nature.com/articles/s41592-024-02430-3)
 
 ```
+### Download the data and prepare the working directory
+
 # Download and uncompress the graph in .gfa format.
 wget https://zenodo.org/records/7937947/files/ecoli50.gfa.zst
 unzstd ecoli50.gfa.zst 
-
 # create a temporary working directory
 mkdir TEMP
 
-# run the first script to extract all the assemblies from the graph.
+
+### run the first script to extract all the assemblies from the graph.
+
 bash /path/to/PG-SCUnK/scripts/GFA2HaploFasta.bash -p ecoli50.gfa -t TEMP -o ecoli50 -@ 1
 
-# Run PG-SCUnK
+
+### Run PG-SCUnK
+
 /path/to/PG-SCUnK/PG-SCUnK -p ecoli50.gfa -a ecoli50 -o Out_PG-SCUnK/ecoli50 -t TEMP -k 100
 
-# Create a Ternary plot of the results from PG-SCUnK. Running this script for the first time may take a while, as it installs required packages and dependencies.
-Rscript --vanilla /path/to/PG-SCUnK/scripts/PG-SCUnK_plot.R Out_PG-SCUnK/ecoli50.stats.txt Out_PG-SCUnK/ecoli50.out.pdf
+
+### Postprocess the results (non mendatory)
+
+# Create a Ternary plot and a barplot of the results from PG-SCUnK. Running this script for the first time may take a while, as it installs required packages and dependencies.
+Rscript --vanilla /path/to/PG-SCUnK/scripts/PG-SCUnK_plot.R Out_PG-SCUnK/ecoli50.stats.txt Out_PG-SCUnK/ecoli50.out
 
 # Locate the SCUnKs along the reference genome
 bash /path/to/PG-SCUnK/scripts/FindSCUnKsRegions.bash -b Out_PG-SCUnK/ecoli50 -r ecoli50/GCF_016403625.2*.fasta -t TEMP -o Out_PG-SCUnK/ -@ 1
+
+# Extract node sequences from the GFA graph into FASTA format
+awk '$1=="S" {print ">"$2"\n"$3}' ecoli50.gfa > Out_PG-SCUnK/ecoli50.nodeSequences.fa 
+# Detect duplicated SCUnKs across nodes (can be slow if many duplicates exist)
+python /path/to/PG-SCUnK/scripts/findDupliSCUnK.py -d Out_PG-SCUnK/ecoli50.duplicated.txt -f Out_PG-SCUnK/ecoli50.nodeSequences.fa -o Out_PG-SCUnK/ecoli50.PosDupliSCUnK.txt
+
+# Report all k-mers present in multiple assemblies and their counts
+# Also generates a file reporting counts per quorum
+~/WORK/TOOLS/PG-SCUnK/scripts/GetHistoKmers.bash -a ecoli50 -o Out_PG-SCUnK/ecoli50 -t TEMP -k 100
+
 ```
 
 ---
 
 ## Citation
 
-If you use `PG-SCUnK`, please cite our [paper](https://www.biorxiv.org/content/10.1101/2025.04.03.646777v2).
+If you use `PG-SCUnK`, please cite our [paper](https://www.biorxiv.org/content/10.1101/2025.04.03.646777v3).
 
 ---
 

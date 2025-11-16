@@ -38,7 +38,9 @@ Data = na.omit(Data)
 
 #### make the plot #####
 
-pdf(file = args[2], width = 10, height = 10)
+# ternary plots
+
+pdf(file = paste0(args[2],".ternary.pdf"), width = 10, height = 10)
 
 layout(matrix(1:4, ncol = 2, byrow = TRUE))
 par(mar = rep(0.5, 4))
@@ -68,5 +70,24 @@ for(i in 1:nrow(Data)){
 }
 
 dev.off()
+
+
+# barplots
+
+dat = Data[,c(3:5)]/rowSums(Data[,c(3:5)])
+dat = as.matrix(dat)
+rownames(dat) = Data[,1]
+if(ncol(dat)>1){
+    dat = t(dat); dat = dat[, rev(colnames(dat))]
+}
+
+pdf(file = paste0(args[2],"barplot.pdf"), width = 10, height = nrow(Data)+4)
+
+par(mar = c(4,8,3,3))
+barplot(dat, width = 1, space = 0, horiz = TRUE, las = 2)
+text(0.02, (1:nrow(Data))-0.5, paste0("U: ", round(dat[1,], 3), " - D: ", round(dat[2,], 3), " - S: ", round(dat[3,], 3)), adj = c(0,0.5), col = "white")
+
+dev.off()
+
 
 #########################
