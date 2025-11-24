@@ -220,12 +220,16 @@ You can install the dependancies required by `FindSCUnKsRegions.bash` in the env
 
 this script help identify the nodes of the graph with duplicated SCUnKs.
 
+`usage : python ./scripts/findDupliSCUnK.py -d <kmer.duplicated.txt> -f <graph.gfa> -o <outfile.PosDupliSCUnK.txt>`
+
 ## 
 
 **`scripts/GetHistoKmers.bash`**
 
 This feature re-processes assemblies to build a histogram of k-mers shared across different quorum assemblies. It helps you:
 quantify the K-mers present in all assemblies indicate stable, core sequences and highlight variability acorss assemblies.
+
+`usage : bash scripts/GetHistoKmers.bash -a <Input Assemblies directory> -o <Output basename> -t <working directy> -k <kmer size>`
 
 ---
 
